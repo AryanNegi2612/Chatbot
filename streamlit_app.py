@@ -11,11 +11,12 @@ from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score, classification_report
 from sklearn.metrics.pairwise import cosine_similarity
 
-# Download NLTK resources if they are not found
+# Ensure NLTK resources are downloaded
 try:
     nltk.data.find('tokenizers/punkt')
 except LookupError:
     nltk.download('punkt')
+
 try:
     nltk.data.find('corpora/stopwords')
 except LookupError:

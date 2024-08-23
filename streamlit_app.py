@@ -11,8 +11,15 @@ from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score, classification_report
 from sklearn.metrics.pairwise import cosine_similarity
 
-nltk.download('stopwords')
-nltk.download('punkt')
+# Download NLTK resources if they are not found
+try:
+    nltk.data.find('tokenizers/punkt')
+except LookupError:
+    nltk.download('punkt')
+try:
+    nltk.data.find('corpora/stopwords')
+except LookupError:
+    nltk.download('stopwords')
 
 # Streamlit UI
 st.title("Intent Recognition and Response Retrieval")

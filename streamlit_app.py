@@ -12,15 +12,8 @@ from sklearn.metrics import accuracy_score, classification_report
 from sklearn.metrics.pairwise import cosine_similarity
 
 # Ensure NLTK resources are downloaded
-try:
-    nltk.data.find('tokenizers/punkt')
-except LookupError:
-    nltk.download('punkt')
-
-try:
-    nltk.data.find('corpora/stopwords')
-except LookupError:
-    nltk.download('stopwords')
+nltk.download('punkt')
+nltk.download('stopwords')
 
 # Streamlit UI
 st.title("Intent Recognition and Response Retrieval")

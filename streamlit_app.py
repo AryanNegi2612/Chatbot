@@ -2,6 +2,7 @@ import streamlit as st
 import PyPDF2
 import re
 import nltk
+import os
 from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
 from sklearn.feature_extraction.text import TfidfVectorizer
@@ -12,8 +13,13 @@ from sklearn.metrics import accuracy_score, classification_report
 from sklearn.metrics.pairwise import cosine_similarity
 
 # Ensure NLTK resources are downloaded
-nltk.download('punkt')
-nltk.download('stopwords')
+nltk_data_path = os.path.expanduser('~/nltk_data')
+os.makedirs(nltk_data_path, exist_ok=True)
+
+nltk.data.path.append(nltk_data_path)
+
+nltk.download('punkt', download_dir=nltk_data_path)
+nltk.download('stopwords', download_dir=nltk_data_path)
 
 # Streamlit UI
 st.title("Intent Recognition and Response Retrieval")

@@ -1,4 +1,7 @@
 streamlit
 PyPDF2
-scikit-learn
 nltk
+sentence-transformers
+scikit-learn
+transformers
+requests

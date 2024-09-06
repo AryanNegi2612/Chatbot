@@ -22,18 +22,17 @@ def embed_text(text_chunks):
     return model.encode(text_chunks)
 
 # Function to find the most relevant chunk using cosine similarity
-def find_similar_chunk(query, text_chunks, embeddings, threshold=0.5):
+def find_similar_chunk(query, text_chunks, embeddings, threshold=0.75):
     model = SentenceTransformer('paraphrase-MiniLM-L6-v2')
     query_embedding = model.encode([query])
     similarities = cosine_similarity(query_embedding, embeddings)[0]
     best_match_index = similarities.argmax()
     best_score = similarities[best_match_index]
     
-    # If the score is below the threshold, escalate to an expert
-    if best_score < threshold:
-        return None, best_score
-    
-    return text_chunks[best_match_index], best_score
+    # Return the best match if it's above the threshold
+    if best_score >= threshold:
+        return text_chunks[best_match_index], best_score
+    return None, best_score
 
 # Function to generate the answer using GPT-Neo (Hugging Face)
 def get_answer_from_llm(context, question):
@@ -71,9 +70,9 @@ def main():
 
         # Step 5: If relevant chunk is found and score is high enough
         if relevant_chunk:
-            # Get answer from GPT-Neo (Hugging Face)
-            answer = get_answer_from_llm(relevant_chunk, user_question)
-            st.write("Answer:", answer)
+            # Directly return the relevant chunk if found
+            st.write("Found relevant information from PDF:")
+            st.write(relevant_chunk)
             st.write(f"Confidence Score: {score:.2f}")
         else:
             # If no relevant data is found, escalate to expert

@@ -1,5 +1,6 @@
 import streamlit as st
 import PyPDF2
+from io import BytesIO
 from sentence_transformers import SentenceTransformer
 from sklearn.metrics.pairwise import cosine_similarity
 from transformers import pipeline
@@ -9,11 +10,10 @@ generator = pipeline("text-generation", model="EleutherAI/gpt-neo-2.7B")
 
 # Function to extract text from the uploaded PDF file
 def extract_text_from_pdf(pdf_file):
-    with open(pdf_file, 'rb') as file:
-        reader = PyPDF2.PdfReader(file)
-        text = ''
-        for page in range(len(reader.pages)):
-            text += reader.pages[page].extract_text()
+    reader = PyPDF2.PdfReader(pdf_file)
+    text = ''
+    for page in range(len(reader.pages)):
+        text += reader.pages[page].extract_text()
     return text
 
 # Function to embed text chunks using Sentence Transformer

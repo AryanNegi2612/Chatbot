@@ -10,10 +10,11 @@ generator = pipeline("text-generation", model="EleutherAI/gpt-neo-2.7B")
 
 # Function to extract text from the uploaded PDF file
 def extract_text_from_pdf(pdf_file):
-    reader = PyPDF2.PdfReader(pdf_file)
+    pdf_reader = PyPDF2.PdfReader(pdf_file)
     text = ''
-    for page in range(len(reader.pages)):
-        text += reader.pages[page].extract_text()
+    for page_num in range(len(pdf_reader.pages)):
+        page = pdf_reader.pages[page_num]
+        text += page.extract_text()  # Extract text from each page
     return text
 
 # Function to embed text chunks using Sentence Transformer
@@ -22,17 +23,18 @@ def embed_text(text_chunks):
     return model.encode(text_chunks)
 
 # Function to find the most relevant chunk using cosine similarity
-def find_similar_chunk(query, text_chunks, embeddings, threshold=0.75):
+def find_similar_chunk(query, text_chunks, embeddings, threshold=0.5):
     model = SentenceTransformer('paraphrase-MiniLM-L6-v2')
     query_embedding = model.encode([query])
     similarities = cosine_similarity(query_embedding, embeddings)[0]
     best_match_index = similarities.argmax()
     best_score = similarities[best_match_index]
     
-    # Return the best match if it's above the threshold
-    if best_score >= threshold:
-        return text_chunks[best_match_index], best_score
-    return None, best_score
+    # If the score is below the threshold, escalate to an expert
+    if best_score < threshold:
+        return None, best_score
+    
+    return text_chunks[best_match_index], best_score
 
 # Function to generate the answer using GPT-Neo (Hugging Face)
 def get_answer_from_llm(context, question):
@@ -70,9 +72,9 @@ def main():
 
         # Step 5: If relevant chunk is found and score is high enough
         if relevant_chunk:
-            # Directly return the relevant chunk if found
-            st.write("Found relevant information from PDF:")
-            st.write(relevant_chunk)
+            # Get answer from GPT-Neo (Hugging Face)
+            answer = get_answer_from_llm(relevant_chunk, user_question)
+            st.write("Answer:", answer)
             st.write(f"Confidence Score: {score:.2f}")
         else:
             # If no relevant data is found, escalate to expert
